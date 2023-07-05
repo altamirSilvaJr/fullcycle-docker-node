@@ -1,0 +1,44 @@
+services:
+  db:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: db
+    restart: always
+    tty: true
+    volumes:
+      - ./mysql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3306:3306
+    networks:
+      - desafio-network
+  
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - 8080:8080
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - desafio-network
+    depends_on:
+      - app
+
+  app:
+    build:
+      context: ./app
+    container_name: node-application
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+    networks:
+      - desafio-network
+    tty: true
+
+networks:
+  desafio-network:
+    driver: bridge
