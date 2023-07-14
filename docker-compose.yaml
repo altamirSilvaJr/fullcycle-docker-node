@@ -31,6 +31,8 @@ services:
     build:
       context: ./app
     container_name: node-application
+    volumes:
+      - ./app/index.js:/usr/src/app/index.js
     ports:
       - 3000:3000
     depends_on:
